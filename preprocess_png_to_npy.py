@@ -9,7 +9,7 @@ def ensure_dir(path):
         os.makedirs(path)
 
 def png_to_npy(png_path, out_path, size=(300, 300)):
-    img = Image.open(png_path).convert("L")   # convert to grayscale
+    img = Image.open(png_path).convert("L")   # grayscale
     img = img.resize(size, Image.BILINEAR)
     arr = np.array(img, dtype=np.float32) / 255.0
     np.save(out_path, arr)
@@ -40,7 +40,8 @@ def main():
                 png_path = os.path.join(dataset_dir, v)
                 out_path = os.path.join(case_dir, f"{idx}.npy")
                 png_to_npy(png_path, out_path)
-                new_views.append(os.path.relpath(out_path, dataset_dir))
+                # chỉ lưu relative path từ images300_array/
+                new_views.append(os.path.relpath(out_path, out_img_root))
 
             new_data[split].append({
                 "id": case_id,
