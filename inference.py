@@ -37,6 +37,13 @@ def run_inference(config):
     torch.manual_seed(seed)
     np.random.seed(seed)
 
+    # Build tokenizer early to sync vocab size with checkpoint/dataset
+    threshold = 10 if config.dataset_name == 'mimic_cxr' else 3
+    tmp_tokenizer = Tokenizer(ann_path=config.anno_path, threshold=threshold, dataset_name=config.dataset_name)
+    # Tokenizer uses indices starting at 3; embedding size should cover all indices
+    config.vocab_size = max(tmp_tokenizer.idx2token.keys()) + 1 if hasattr(tmp_tokenizer, 'idx2token') else (
+        tmp_tokenizer.get_vocab_size() + 3)
+
     # Models
     detector = build_diagnosisbot(config.num_classes, config.detector_weight_path).to(device)
     model, _ = caption.build_model(config)
