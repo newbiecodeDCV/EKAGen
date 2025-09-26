@@ -10,7 +10,7 @@ import cv2
 import glob
 import tqdm
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 if os.path.exists("datasets/thresholds.pkl"):
     with open("datasets/thresholds.pkl", "rb") as f:
