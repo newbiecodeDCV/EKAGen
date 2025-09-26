@@ -9,7 +9,7 @@ def ensure_dir(path):
         os.makedirs(path)
 
 def png_to_npy(png_path, out_path, size=(300, 300)):
-    img = Image.open(png_path).convert("L")
+    img = Image.open(png_path).convert("L")   # convert to grayscale
     img = img.resize(size, Image.BILINEAR)
     arr = np.array(img, dtype=np.float32) / 255.0
     np.save(out_path, arr)
@@ -44,14 +44,14 @@ def main():
 
             new_data[split].append({
                 "id": case_id,
-                "views": new_views,
+                "image_path": new_views,
                 "report": report
             })
 
     with open(out_ann_path, "w") as fw:
         json.dump(new_data, fw, indent=2)
 
-    print(f"Done. Saved new annotation with splits: {out_ann_path}")
+    print(f"Done. Saved new annotation: {out_ann_path}")
 
 if __name__ == "__main__":
     main()
