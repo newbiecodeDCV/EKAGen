@@ -3,10 +3,10 @@ import json
 
 def main():
     dataset_dir = "dataset/iu_xray"
-    ann_path = os.path.join(dataset_dir, "annotation.json")
-    out_ann_path = os.path.join(dataset_dir, "annotation_png_fixed.json")
+    ann_in = os.path.join(dataset_dir, "annotation.json")       # annotation gốc
+    ann_out = os.path.join(dataset_dir, "annotation_fixed.json")  # annotation mới
 
-    with open(ann_path, "r") as f:
+    with open(ann_in, "r") as f:
         data = json.load(f)
 
     new_data = {"train": [], "val": [], "test": []}
@@ -14,12 +14,11 @@ def main():
     for split in ["train", "val", "test"]:
         for rec in data[split]:
             case_id = rec["id"]
-            views = rec["image_path"]
             report = rec["report"]
 
-            # Đảm bảo tất cả path đều đúng: images/CXRxxxx/0.png
             fixed_views = []
-            for v in views:
+            for v in rec["image_path"]:
+                # đảm bảo prefix là images/...
                 if not v.startswith("images/"):
                     v = os.path.join("images", v)
                 fixed_views.append(v)
@@ -30,10 +29,10 @@ def main():
                 "report": report
             })
 
-    with open(out_ann_path, "w") as fw:
-        json.dump(new_data, fw, indent=2)
+    with open(ann_out, "w") as f:
+        json.dump(new_data, f, indent=2)
 
-    print(f"Annotation fixed. Saved: {out_ann_path}")
+    print(f"Annotation fixed and saved to {ann_out}")
 
 if __name__ == "__main__":
     main()
