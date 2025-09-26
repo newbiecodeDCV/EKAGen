@@ -129,7 +129,11 @@ def build_argparser():
     # Basic runtime
     parser.add_argument('--device', default='cuda:0')
     parser.add_argument('--seed', type=int, default=42)
-    # Các tham số dưới không ảnh hưởng đến single-image inference, giữ tối thiểu
+    # Các tham số dưới không ảnh hưởng trực tiếp đến single-image inference, nhưng
+    # là bắt buộc khi build model/backbone
+    parser.add_argument('--backbone', type=str, default='resnet101')
+    parser.add_argument('--position_embedding', type=str, default='sine')
+    parser.add_argument('--dilation', type=bool, default=True)
 
     # Transformer / tokenizer config (keep in sync with training)
     parser.add_argument('--hidden_dim', type=int, default=256)
