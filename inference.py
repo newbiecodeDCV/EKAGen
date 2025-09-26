@@ -170,9 +170,9 @@ def build_argparser():
 
     # Dataset
     parser.add_argument('--image_size', type=int, default=300)
-    parser.add_argument('--dataset_name', type=str, default='mimic_cxr')
-    parser.add_argument('--anno_path', type=str, default='../dataset/mimic_cxr/annotation.json')
-    parser.add_argument('--data_dir', type=str, default='../dataset/mimic_cxr/images300')
+    parser.add_argument('--dataset_name', type=str, default='iu_xray')
+    parser.add_argument('--anno_path', type=str, default='../dataset/iu_xray/annotation.json')
+    parser.add_argument('--data_dir', type=str, default='../dataset/iu_xray/images300') 
 
     # Caption model checkpoint
     parser.add_argument('--test_path', type=str, default='./weight_path/caption_model.pth',
