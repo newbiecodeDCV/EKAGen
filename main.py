@@ -193,6 +193,8 @@ if __name__ == "__main__":
     # mode
     parser.add_argument('--mode', type=str, default="train")
     parser.add_argument('--test_path', type=str, default="")
+    # Output directory for saving evaluation results
+    parser.add_argument('--save_dir', type=str, default='outputs')
 
     config = parser.parse_args()
     main(config)

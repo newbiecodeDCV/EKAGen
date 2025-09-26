@@ -2,6 +2,9 @@ import torch
 import math
 import sys
 import tqdm
+import os
+import json
+from datetime import datetime
 from pycocoevalcap.bleu.bleu import Bleu
 from pycocoevalcap.meteor.meteor import Meteor as meteor
 from pycocoevalcap.rouge.rouge import Rouge as rouge
@@ -130,6 +133,34 @@ def evaluate(model, class_model, criterion, data_loader, device, config, thresho
             reports.append([item for item in reports_sentence if item not in [config.start_token, config.end_token, 0]])
         ground_truth = [tokenizer.decode(item) for item in reports]
         pred_result = [tokenizer.decode(item) for item in preds]
+
+        # Save predictions and ground truth
+        try:
+            save_dir = getattr(config, 'save_dir', None) or getattr(config, 'output_dir', None) or "outputs"
+            os.makedirs(save_dir, exist_ok=True)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            json_path = os.path.join(save_dir, f"eval_results_{timestamp}.json")
+            csv_path = os.path.join(save_dir, f"eval_results_{timestamp}.csv")
+
+            records = [
+                {"id": i, "ground_truth": gt, "prediction": pr}
+                for i, (gt, pr) in enumerate(zip(ground_truth, pred_result))
+            ]
+
+            with open(json_path, "w", encoding="utf-8") as f:
+                json.dump(records, f, ensure_ascii=False, indent=2)
+
+            with open(csv_path, "w", encoding="utf-8") as f:
+                f.write("id,ground_truth,prediction\n")
+                for rec in records:
+                    # Replace newlines/commas to keep CSV simple
+                    gt = rec["ground_truth"].replace("\n", " ").replace(",", " ")
+                    pr = rec["prediction"].replace("\n", " ").replace(",", " ")
+                    f.write(f"{rec['id']},{gt},{pr}\n")
+        except Exception as e:
+            # Do not crash evaluation because of I/O errors
+            print(f"[evaluate] Warning: failed to save results: {e}")
+
         val_met = compute_scores({i: [gt] for i, gt in enumerate(ground_truth)},
                                  {i: [re] for i, re in enumerate(pred_result)})
         return val_met
