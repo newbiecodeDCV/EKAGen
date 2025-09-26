@@ -25,24 +25,29 @@ def main():
         data = json.load(f)
 
     new_records = []
-    for rec in tqdm(data, desc="Converting"):
-        case_id = rec["id"]
-        views = rec["views"]  # list các path ảnh .png
-        new_views = []
-        case_dir = os.path.join(out_img_root, case_id)
-        ensure_dir(case_dir)
+    # data có keys: "train", "val", "test"
+    for split, records in data.items():
+        for rec in tqdm(records, desc=f"Converting {split}"):
+            case_id = rec["id"]
+            views = rec["image_path"]
+            report = rec["report"]
 
-        for idx, v in enumerate(views):
-            png_path = os.path.join(dataset_dir, v)
-            out_path = os.path.join(case_dir, f"{idx}.npy")
-            png_to_npy(png_path, out_path)
-            new_views.append(os.path.relpath(out_path, dataset_dir))
+            case_dir = os.path.join(out_img_root, case_id)
+            ensure_dir(case_dir)
 
-        new_records.append({
-            "id": case_id,
-            "views": new_views,
-            "report": rec["report"]
-        })
+            new_views = []
+            for idx, v in enumerate(views):
+                png_path = os.path.join(dataset_dir, v)
+                out_path = os.path.join(case_dir, f"{idx}.npy")
+                png_to_npy(png_path, out_path)
+                new_views.append(os.path.relpath(out_path, dataset_dir))
+
+            new_records.append({
+                "id": case_id,
+                "views": new_views,
+                "report": report,
+                "split": split
+            })
 
     with open(out_ann_path, "w") as fw:
         json.dump(new_records, fw, indent=2)
