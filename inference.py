@@ -154,6 +154,7 @@ def build_argparser():
     parser.add_argument('--num_classes', type=int, default=14)
     parser.add_argument('--thresholds_path', type=str, default='./datasets/thresholds.pkl')
     parser.add_argument('--detector_weight_path', type=str, default='./weight_path/diagnosisbot.pth')
+    parser.add_argument('--knowledge_prompt_path', type=str, default='./knowledge_path/knowledge_prompt_mimic.pkl')
     parser.add_argument('--lr_backbone', type=float, default=1e-5)
     # ADA defaults (match main.py test settings)
     parser.add_argument('--theta', type=float, default=0.4)
